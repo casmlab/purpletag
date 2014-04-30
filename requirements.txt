@@ -1,0 +1,7 @@
+docopt
+numpy
+requests
+sklearn
+TwitterAPI
+wheel==0.22.0
+
