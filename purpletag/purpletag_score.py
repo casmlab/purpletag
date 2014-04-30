@@ -6,6 +6,7 @@ Options
     -h, --help             help
     -r, --refresh-mocs     fetch latest legislator information from GovTrack
     -c, --counts           use hashtag count features instead of binary features
+    -o, --overwrite        overwrite existing .tags files
 """
 from docopt import docopt
 import io
@@ -100,7 +101,7 @@ def write_scores(scores, vocab, tag_file):
                             'path') + '/' + config.get('data', 'scores') + '/' + basename + '.scores',
                  mode='wt', encoding='utf8')
     for word, score in sorted(zip(vocab, scores), key=lambda x: x[1]):
-        fp.write('%s %g\n' % (word, score))
+        fp.write('%s %f\n' % (word, score))
     fp.close()
 
 
@@ -112,20 +113,23 @@ def score(tag_file, handle2party, args):
 
     vec = DictVectorizer()
     X = vec.fit_transform(tags)
-    print '10 features=', vec.vocabulary_.items()[:10]
+    print '5 features:', vec.get_feature_names()[:5]
     label_enc = LabelEncoder()
     y = label_enc.fit_transform(parties)
-    print 'vectorized %d instances', len(y)
+    print 'vectorized %d instances' % len(y)
     print 'classes=', label_enc.classes_
     scores = score_features(X, y, len(vec.vocabulary_), args)
     write_scores(scores, vec.get_feature_names(), tag_file)
 
 
-def get_tag_files():
+def get_tag_files(overwrite):
     """ Get .tags files. """
     tag_files = get_files('tags', 'tags')
-    score_files_bn = get_basenames(get_files('scores', 'scores'))
-    return [f for f in tag_files if not has_score_file(f, score_files_bn)]
+    if overwrite:
+        return tag_files
+    else:
+        score_files_bn = get_basenames(get_files('scores', 'scores'))
+        return [f for f in tag_files if not has_score_file(f, score_files_bn)]
 
 
 def fetch_legislators():
@@ -161,7 +165,7 @@ def main():
     print 'reading twitter handles'
     handle2party = twitter_handle_to_party()
     print handle2party.items()[0]
-    tag_files = get_tag_files()
+    tag_files = get_tag_files(args['--overwrite'])
     for tag_file in tag_files:
         print 'scoring', tag_file
         score(tag_file, handle2party, args)
