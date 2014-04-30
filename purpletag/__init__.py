@@ -17,3 +17,11 @@ else:
 
 
 sys.stdout = codecs.getwriter('utf8')(sys.stdout)
+
+# make directories
+path = config.get('data', 'path')
+for subdir in 'jsons', 'tags', 'scores':
+    try:
+        os.makedirs(path + '/' + config.get('data', subdir))
+    except:
+        pass
