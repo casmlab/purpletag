@@ -52,6 +52,9 @@ def track_users(ids, api):
 
 
 def search_users(ids, api):
+    """ Use the Twitter REST API to fetch the most recent 3,200 tweets from
+    each user in the list of ids. When rate limits are encountered, sleep for
+    5 minutes and try again."""
     print 'searching for', len(ids), 'users'
     outf = io.open(make_output_file(), mode='w', encoding='utf8')
     for id_ in ids:
@@ -62,6 +65,7 @@ def search_users(ids, api):
                 results = api.request('statuses/user_timeline', {'id': id_, 'count': 200, 'max_id': max_id})
             else:
                 results = api.request('statuses/user_timeline', {'id': id_, 'count': 200})
+            print '\tstatus:', results.status_code
             tweets = [t for t in results]
             if results.status_code != 200:  # something went wrong
                 print 'sleeping on error:', results.text
