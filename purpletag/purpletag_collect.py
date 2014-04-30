@@ -19,7 +19,7 @@ from data import parse_twitter_handles
 def fetch_twitter_handles():
     # FIXME: Test
     print 'TEST FETCH_TWITTER_HANDLES'
-    text = requests.get(config.get(config.get('govtrack', 'handles'))).text
+    text = requests.get(config.get('govtrack', 'handles')).text
     fp = open(config.get('data', 'path') + '/' + config.get('data', 'twitter_yaml'), 'w')
     fp.write(text)
     fp.close()
