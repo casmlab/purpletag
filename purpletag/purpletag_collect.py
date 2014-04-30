@@ -36,6 +36,7 @@ def make_output_file():
 
 def track_users(ids, api):
     # FIXME: broken
+    raise NotImplementedError('track_users not yet implemented.')
     print 'tracking', len(ids), 'users'
     outf = io.open(make_output_file(), mode='wt', encoding='utf8')
     results = api.request('statuses/filter', {'follow': ','.join(ids)})
@@ -81,8 +82,7 @@ def search_users(ids, api):
 def lookup_ids(handles, api):
     """ Fetch the twitter ids of each screen_name. """
     ids = set()
-    # for handle_list in [handles[100 * i:100 * i + 100] for i in range(len(handles))]:
-    for handle_list in [handles[100 * i:100 * i + 100] for i in range(1)]:
+    for handle_list in [handles[100 * i:100 * i + 100] for i in range(len(handles))]:
         if len(handle_list) > 0:
             print handle_list
             r = api.request('users/lookup', {'screen_name': ','.join(handle_list)})
