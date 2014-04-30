@@ -35,6 +35,7 @@ def make_output_file():
 
 
 def track_users(ids, api):
+    # FIXME: broken
     print 'tracking', len(ids), 'users'
     outf = io.open(make_output_file(), mode='wt', encoding='utf8')
     results = api.request('statuses/filter', {'follow': ','.join(ids)})
@@ -52,20 +53,25 @@ def track_users(ids, api):
 
 def search_users(ids, api):
     print 'searching for', len(ids), 'users'
-    outf = io.open(make_output_file(), mode='wt', encoding='utf8')
-    count = 0
+    outf = io.open(make_output_file(), mode='w', encoding='utf8')
     for id_ in ids:
+        max_id = None
         print 'searching for', id_
-        results = api.request('statuses/user_timeline', {'id': id_, 'count': 200})
-        for tweet in results.get_iterator():
-            outf.write(unicode(json.dumps(tweet)))
-            # FIXME: Why the hell can't I write unicode here?
-            outf.write(u'\n')
-            count += 1
-            if count > 1000:
-                outf.close()
-                outf = make_output_file()
-                count = 0
+        while True:
+            if max_id:
+                results = api.request('statuses/user_timeline', {'id': id_, 'count': 200, 'max_id': max_id})
+            else:
+                results = api.request('statuses/user_timeline', {'id': id_, 'count': 200})
+            tweets = [t for t in results]
+            if results.status_code != 200:  # something went wrong
+                print 'sleeping on error:', results.text
+                time.sleep(300)
+            elif len(tweets) == 0:  # on to the next user.
+                break
+            else:  # save these tweets and update max_id
+                outf.write(results.text + '\n')
+                max_id = min(t['id'] for t in results) - 1
+    outf.close()
 
 
 def lookup_ids(handles, api):
@@ -83,7 +89,6 @@ def lookup_ids(handles, api):
 
 def main():
     args = docopt(__doc__)
-    print args
     if args['--refresh-handles']:
         print 'refreshing handles'
         fetch_twitter_handles()
