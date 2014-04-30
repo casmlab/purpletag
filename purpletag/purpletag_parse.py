@@ -40,27 +40,30 @@ def get_hashtags(js):
         return [ht['text'].lower() for ht in js['entities']['hashtags']]
 
 
-def json_iterate(json_fp):
+def json_iterate(json_fp, ids_seen):
     """ Iterate tweet day, screen_name, and hashtag_list for tweets containing
     hashtags. """
     for line in json_fp:
         try:
-            js = json.loads(line)
-            hashtags = get_hashtags(js)
-            if len(hashtags) > 0:
-                sname = js['user']['screen_name'].lower()
-                day = parse_day(js['created_at'])
-                yield (day, sname, hashtags)
+            jsons = json.loads(line)
+            for js in jsons:
+                if not js['id'] in ids_seen:
+                    hashtags = get_hashtags(js)
+                    if len(hashtags) > 0:
+                        sname = js['user']['screen_name'].lower()
+                        day = parse_day(js['created_at'])
+                        yield (day, sname, hashtags)
+                        ids_seen.add(js['id'])
         except:
             e = sys.exc_info()[0]
             print 'skipping', e
 
 
-def parse(json_f, tags_list, timespans, today):
+def parse(json_f, tags_list, timespans, today, ids_seen):
     """ Populate the tags_list Counters for each timespan. """
     print 'parsing', json_f
     json_fp = io.open(json_f, mode='rt', encoding='utf8')
-    for day, sname, hashtags in json_iterate(json_fp):
+    for day, sname, hashtags in json_iterate(json_fp, ids_seen):
         days_old = (today - day).days
         print sname, hashtags
         for timespan, tags in zip(timespans, tags_list):
@@ -102,8 +105,9 @@ def main():
     timespans = parse_timespans(args['-t'])
     tags_list = [defaultdict(lambda: Counter()) for i in range(len(timespans))]
     files = get_files('jsons', 'json')
+    ids_seen = set()
     for f in files:
-        parse(f, tags_list, timespans, today)
+        parse(f, tags_list, timespans, today, ids_seen)
 
     outfiles = open_outfiles(today, timespans)
     for outfile, tags in zip(outfiles, tags_list):
