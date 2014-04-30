@@ -20,8 +20,7 @@ def get_basenames(files):
 
 
 def get_files(subdir, extension):
-    """ Return all .tags files in the parsed data directory that don't have
-    corresponding .scores files. """
+    """ Return all files in a subdirectory matching this extension. """
     return glob.glob(config.get('data', 'path') + '/' +
                      config.get('data', subdir) + '/*.' + extension)
 
