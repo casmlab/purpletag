@@ -91,6 +91,7 @@ def compute_signs(X, y, V):
 def score_features(X, y, V, args):
     """ FIXME: allow different options. """
     chis, pvals = chi2(X, y)
+    chis /= sum(chis)
     signs = compute_signs(X, y, V)
     return np.multiply(chis, signs)
 
