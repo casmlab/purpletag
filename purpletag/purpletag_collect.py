@@ -1,12 +1,17 @@
-"""usage: purpletag collect [options]
+"""usage:
+    purpletag collect [options]
+    purpletag collect (-t | --track | -s | --search) [options]
 
 Options
     -h, --help
     -o, --output <file>        output path
     -r, --refresh-handles      fetch latest twitter handles for politicians
+    -t, --track                collect tweets in real time using streaming API
+    -s, --search               search historical tweets using search API
 """
 from docopt import docopt
 import io
+import json
 import time
 import requests
 
@@ -36,7 +41,7 @@ def track_users(ids, api):
     print results.text
     count = 0
     for tweet in results.get_iterator():
-        outf.write(tweet)
+        outf.write(json.dumps(tweet))
         outf.write('\n')
         count += 1
         if count > 1000:
@@ -45,10 +50,29 @@ def track_users(ids, api):
             count = 0
 
 
+def search_users(ids, api):
+    print 'searching for', len(ids), 'users'
+    outf = io.open(make_output_file(), mode='wt', encoding='utf8')
+    count = 0
+    for id_ in ids:
+        print 'searching for', id_
+        results = api.request('statuses/user_timeline', {'id': id_, 'count': 200})
+        for tweet in results.get_iterator():
+            outf.write(unicode(json.dumps(tweet)))
+            # FIXME: Why the hell can't I write unicode here?
+            outf.write(u'\n')
+            count += 1
+            if count > 1000:
+                outf.close()
+                outf = make_output_file()
+                count = 0
+
+
 def lookup_ids(handles, api):
     """ Fetch the twitter ids of each screen_name. """
     ids = set()
-    for handle_list in [handles[100 * i:100 * i + 100] for i in range(len(handles))]:
+    # for handle_list in [handles[100 * i:100 * i + 100] for i in range(len(handles))]:
+    for handle_list in [handles[100 * i:100 * i + 100] for i in range(1)]:
         if len(handle_list) > 0:
             print handle_list
             r = api.request('users/lookup', {'screen_name': ','.join(handle_list)})
@@ -71,7 +95,10 @@ def main():
                      config.get('twitter', 'access_token'),
                      config.get('twitter', 'access_token_secret'))
     ids = lookup_ids(handles, api)
-    track_users(ids, api)
+    if args['--track']:
+        track_users(ids, api)
+    elif args['--search']:
+        search_users(ids, api)
 
 
 if __name__ == '__main__':
