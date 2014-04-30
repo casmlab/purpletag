@@ -12,12 +12,9 @@ Purple Tag
         :target: https://pypi.python.org/pypi/purpletag
 
 
-Python Boilerplate contains all the boilerplate you need to create a Python package.
 
-* Free software: BSD license
-* Documentation: http://purpletag.rtfd.org.
 
-Features
---------
+TODO
+----
 
-* TODO
+* Write a README
