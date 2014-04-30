@@ -62,6 +62,7 @@ def parse(json_f, tags_list, timespans, today):
     json_fp = io.open(json_f, mode='rt', encoding='utf8')
     for day, sname, hashtags in json_iterate(json_fp):
         days_old = (today - day).days
+        print sname, hashtags
         for timespan, tags in zip(timespans, tags_list):
             if days_old <= timespan:
                 tags[sname].update(hashtags)
@@ -100,7 +101,7 @@ def main():
     today = datetime.now()
     timespans = parse_timespans(args['-t'])
     tags_list = [defaultdict(lambda: Counter()) for i in range(len(timespans))]
-    files = get_files('json', '.json')
+    files = get_files('jsons', 'json')
     for f in files:
         parse(f, tags_list, timespans, today)
 
