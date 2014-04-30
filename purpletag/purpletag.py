@@ -6,6 +6,7 @@ usage: purpletag [--help] <command> [<args>...]
 The most commonly used purpletag commands are:
      collect    Collect tweets from members of congress, stored in json
      parse      Parse tweet json
+     score      Create score files containing polarization scores for hashtags and MOCs.
 See 'purpletag help <command>' for more information on a specific command.
 
 """
