@@ -3,5 +3,5 @@ numpy
 pyyaml
 requests
 sklearn
-TwitterAPI
+twutil
 wheel
