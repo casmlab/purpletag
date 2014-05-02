@@ -12,6 +12,7 @@ Options
 from docopt import docopt
 import io
 import json
+import os
 import time
 import requests
 
@@ -22,8 +23,7 @@ from data import parse_twitter_handles
 
 
 def fetch_twitter_handles():
-    # FIXME: Test
-    print 'TEST FETCH_TWITTER_HANDLES'
+    """ Fetch twitter handles from govtrack. """
     text = requests.get(config.get('govtrack', 'handles')).text
     fp = open(config.get('data', 'path') + '/' + config.get('data', 'twitter_yaml'), 'w')
     fp.write(text)
@@ -35,7 +35,9 @@ def make_output_file():
 
 
 def track_users(ids):
-    # FIXME: broken
+    """
+    Track users by id, writing to jsons folder.
+    """
     print 'tracking', len(ids), 'users'
     outf = io.open(make_output_file(), mode='wt', encoding='utf8')
     count = 0
@@ -64,9 +66,15 @@ def search_users(screen_names):
     outf.close()
 
 
+def handles_exist():
+    """ Do we have the yaml file of twitter handles? """
+    yaml_doc = config.get('data', 'path') + '/' + config.get('data', 'twitter_yaml')
+    return os.path.isfile(yaml_doc)
+
+
 def main():
     args = docopt(__doc__)
-    if args['--refresh-handles']:
+    if args['--refresh-handles'] or not handles_exist():
         print 'refreshing handles'
         fetch_twitter_handles()
     handle_yaml = parse_twitter_handles()
