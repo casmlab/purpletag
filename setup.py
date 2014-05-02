@@ -24,7 +24,7 @@ setup(
     long_description=readme + '\n\n' + history,
     author='Aron Culotta',
     author_email='aronwc@gmail.com',
-    url='https://github.com/aronwc'
+    url='https://github.com/casmlab'
         '/purpletag',
     packages=[
         'purpletag',
