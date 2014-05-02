@@ -6,7 +6,7 @@ Options
     -h, --help             help
     -r, --refresh-mocs     fetch latest legislator information from GovTrack
     -c, --counts           use hashtag count features instead of binary features
-    -o, --overwrite        overwrite existing .tags files
+    -o, --overwrite        overwrite existing .scores files
 """
 from docopt import docopt
 import io
