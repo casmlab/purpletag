@@ -6,10 +6,6 @@ import yaml
 
 from . import config
 
-__author__ = 'Aron Culotta'
-__email__ = 'aronwc@gmail.com'
-__version__ = '0.1.0'
-
 
 def get_basenames(files):
     """ Return basename of each file. E.g.:
