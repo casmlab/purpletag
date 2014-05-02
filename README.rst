@@ -143,6 +143,8 @@ The
 | tags file created when running this command on May 2, 2014, collecting
 | statistics for the past 365 days.
 
+Output is stored in ``/data/purpletag/tags``.
+
 ``score``
 ~~~~~~~~~
 
@@ -179,3 +181,4 @@ for the 365
     fairnessforall 0.001799
     tcot 0.002249
 
+Output is stored in ``/data/purpletag/scores``.
