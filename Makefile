@@ -28,7 +28,7 @@ lint:
 	flake8 purpletag tests
 
 test:
-	python setup.py test
+	 nosetests --with-doctest
 
 test-all:
 	tox
