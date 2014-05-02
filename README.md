@@ -119,6 +119,7 @@ file name itself will indicate this. For example, `2014-05-02.365.tags` is a
 tags file created when running this command on May 2, 2014, collecting
 statistics for the past 365 days.
 
+Output is stored in `/data/purpletag/tags`.
 
 ### `score`
 
@@ -154,4 +155,4 @@ fairnessforall 0.001799
 tcot 0.002249
 ```
 
-
+Output is stored in `/data/purpletag/scores`.
