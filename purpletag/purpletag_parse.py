@@ -12,6 +12,7 @@ from datetime import datetime
 import io
 import json
 import sys
+import traceback
 
 from numpy import array as npa
 from docopt import docopt
@@ -46,6 +47,8 @@ def json_iterate(json_fp, ids_seen):
     for line in json_fp:
         try:
             jsons = json.loads(line)
+            if type(jsons) is dict:
+                jsons = [jsons]
             for js in jsons:
                 if not js['id'] in ids_seen:
                     hashtags = get_hashtags(js)
@@ -55,8 +58,9 @@ def json_iterate(json_fp, ids_seen):
                         yield (day, sname, hashtags)
                         ids_seen.add(js['id'])
         except:
-            e = sys.exc_info()[0]
-            print 'skipping', e
+            e = sys.exc_info()
+            print 'skipping', e[0]
+            print traceback.format_exc()
 
 
 def parse(json_f, tags_list, timespans, today, ids_seen):
