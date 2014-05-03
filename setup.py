@@ -20,7 +20,7 @@ history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 setup(
     name='purpletag',
     version='0.1.0',
-    description='Python Boilerplate contains all the boilerplate you need to create a Python package.',
+    description='A tool to track hashtags used by members of the U.S. congress.',
     long_description=readme + '\n\n' + history,
     author='Aron Culotta',
     author_email='aronwc@gmail.com',
