@@ -15,6 +15,8 @@ import json
 import os
 import time
 import requests
+import sys
+import traceback
 
 import twutil
 
@@ -42,14 +44,20 @@ def track_users(ids):
     outf = io.open(make_output_file(), mode='wt', encoding='utf8')
     count = 0
     for tweet in twutil.collect.track_user_ids(ids):
-        outf.write(json.dumps(tweet, ensure_ascii=False, encoding='utf8'))
-        outf.write(u'\n')
-        outf.flush()
-        count += 1
-        if count > 1000:
-            outf.close()
-            outf = make_output_file()
-            count = 0
+        try:
+            outf.write(json.dumps(tweet, ensure_ascii=False, encoding='utf8'))
+            outf.write(u'\n')
+            outf.flush()
+            count += 1
+            if count > 1000:
+                outf.close()
+                outf = make_output_file()
+                count = 0
+        except:
+            e = sys.exc_info()
+            print 'skipping error', e[0]
+            print traceback.format_exc()
+
     outf.close()
 
 
