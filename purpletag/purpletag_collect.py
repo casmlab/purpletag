@@ -58,6 +58,8 @@ def track_users(ids):
             print 'skipping error', e[0]
             print traceback.format_exc()
             twutil.collect.reinit()
+            outf.close()
+            track_users(ids)
 
     outf.close()
 
