@@ -51,7 +51,7 @@ def track_users(ids):
             count += 1
             if count > 1000:
                 outf.close()
-                outf = make_output_file()
+                outf = io.open(make_output_file(), mode='wt', encoding='utf8')
                 count = 0
         except:
             e = sys.exc_info()
