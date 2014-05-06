@@ -49,7 +49,7 @@ def track_users(ids):
             outf.write(u'\n')
             outf.flush()
             count += 1
-            if count > 1000:
+            if count > 100000:
                 outf.close()
                 outf = io.open(make_output_file(), mode='wt', encoding='utf8')
                 count = 0
