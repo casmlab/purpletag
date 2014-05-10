@@ -5,10 +5,11 @@ Parse .json files into .tags files.
 Options
     -h, --help                 help
     -t <timespans>             sliding window timespans [default: 1,30,365]
+    -d <days>                  number of historical days to simulate [default: 1]
 """
 import codecs
 from collections import Counter, defaultdict
-from datetime import datetime
+from datetime import datetime, timedelta
 import io
 import json
 import sys
@@ -69,7 +70,7 @@ def parse(json_f, tags_list, timespans, today, ids_seen):
     json_fp = io.open(json_f, mode='rt', encoding='utf8')
     for day, sname, hashtags in json_iterate(json_fp, ids_seen):
         days_old = (today - day).days
-        print sname, hashtags
+        # print sname, hashtags
         for timespan, tags in zip(timespans, tags_list):
             if days_old <= timespan:
                 tags[sname].update(hashtags)
@@ -107,15 +108,18 @@ def main():
     args = docopt(__doc__)
     today = datetime.now()
     timespans = parse_timespans(args['-t'])
-    tags_list = [defaultdict(lambda: Counter()) for i in range(len(timespans))]
     files = get_files('jsons', 'json')
-    ids_seen = set()
-    for f in files:
-        parse(f, tags_list, timespans, today, ids_seen)
-
-    outfiles = open_outfiles(today, timespans)
-    for outfile, tags in zip(outfiles, tags_list):
-        write_tags(outfile, tags)
+    ndays = int(args['-d'])
+    for day in range(ndays):
+        ids_seen = set()
+        tags_list = [defaultdict(lambda: Counter()) for i in range(len(timespans))]
+        thisday = today - timedelta(days=day)
+        print 'pretending today %s' % thisday.strftime('%Y-%m-%d')
+        for f in files:
+            parse(f, tags_list, timespans, thisday, ids_seen)
+        outfiles = open_outfiles(thisday, timespans)
+        for outfile, tags in zip(outfiles, tags_list):
+            write_tags(outfile, tags)
 
 
 if __name__ == '__main__':

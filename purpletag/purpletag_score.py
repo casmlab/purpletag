@@ -110,7 +110,8 @@ def score(tag_file, handle2party, args):
     """ Output a file with hashtag scores. """
     handles, tags, parties = parse_tag_file(tag_file, handle2party, args)
     if len(tags) == 0:
-        raise ValueError("can't find any legislators in .tags files. Perhaps the legislator yaml file is bad?")
+        print "can't find any legislators in %s" % tag_file
+        return
 
     vec = DictVectorizer()
     X = vec.fit_transform(tags)
