@@ -59,9 +59,10 @@ def json_iterate(json_fp, ids_seen):
                         yield (day, sname, hashtags)
                         ids_seen.add(js['id'])
         except:
-            e = sys.exc_info()
-            print 'skipping', e[0]
-            print traceback.format_exc()
+            pass
+            # e = sys.exc_info()
+            # print 'skipping', e[0]
+            # print traceback.format_exc()
 
 
 def parse(json_f, tags_list, timespans, today, ids_seen):
