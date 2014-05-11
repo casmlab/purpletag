@@ -69,13 +69,16 @@ def parse(json_f, tags_list, timespans, today, ids_seen):
     """ Populate the tags_list Counters for each timespan. """
     print 'parsing', json_f
     json_fp = io.open(json_f, mode='rt', encoding='utf8')
+    counts = Counter()
     for day, sname, hashtags in json_iterate(json_fp, ids_seen):
         days_old = (today - day).days
         # print sname, hashtags
-        for timespan, tags in zip(timespans, tags_list):
+        for timespan in timespans:
             if days_old <= timespan:
-                tags[sname].update(hashtags)
-    return tags_list
+                counts[timespan] += 1
+                tags_list[timespan][sname].update(hashtags)
+    print 'timespan counts=', counts
+    # return tags_list
 
 
 def write_tags(outfile, tags):
@@ -113,14 +116,14 @@ def main():
     ndays = int(args['-d'])
     for day in range(ndays):
         ids_seen = set()
-        tags_list = [defaultdict(lambda: Counter()) for i in range(len(timespans))]
+        tags_list = dict([(timespan, defaultdict(lambda: Counter())) for timespan in timespans])
         thisday = today - timedelta(days=day)
-        print 'pretending today %s' % thisday.strftime('%Y-%m-%d')
+        print 'pretending today is %s' % thisday.strftime('%Y-%m-%d')
         for f in files:
             parse(f, tags_list, timespans, thisday, ids_seen)
         outfiles = open_outfiles(thisday, timespans)
-        for outfile, tags in zip(outfiles, tags_list):
-            write_tags(outfile, tags)
+        for outfile, span in zip(outfiles, timespans):
+            write_tags(outfile, tags_list[span])
 
 
 if __name__ == '__main__':
