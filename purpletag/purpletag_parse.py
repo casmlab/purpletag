@@ -18,7 +18,7 @@ import traceback
 from numpy import array as npa
 from docopt import docopt
 
-from data import get_files
+from data import get_files, twitter_handle_to_party
 from . import config
 
 sys.stdout = codecs.getwriter('utf8')(sys.stdout)
@@ -42,9 +42,9 @@ def get_hashtags(js):
         return [ht['text'].lower() for ht in js['entities']['hashtags']]
 
 
-def json_iterate(json_fp, ids_seen):
+def json_iterate(json_fp, ids_seen, handles):
     """ Iterate tweet day, screen_name, and hashtag_list for tweets containing
-    hashtags. """
+    hashtags from users in handles. """
     for line in json_fp:
         try:
             jsons = json.loads(line)
@@ -55,9 +55,10 @@ def json_iterate(json_fp, ids_seen):
                     hashtags = get_hashtags(js)
                     if len(hashtags) > 0:
                         sname = js['user']['screen_name'].lower()
-                        day = parse_day(js['created_at'])
-                        yield (day, sname, hashtags)
-                        ids_seen.add(js['id'])
+                        if sname in handles:
+                            day = parse_day(js['created_at'])
+                            yield (day, sname, hashtags)
+                            ids_seen.add(js['id'])
         except:
             pass
             # e = sys.exc_info()
@@ -65,12 +66,12 @@ def json_iterate(json_fp, ids_seen):
             # print traceback.format_exc()
 
 
-def parse(json_f, tags_list, timespans, today, ids_seen):
+def parse(json_f, tags_list, timespans, today, ids_seen, handles):
     """ Populate the tags_list Counters for each timespan. """
     print 'parsing', json_f
     json_fp = io.open(json_f, mode='rt', encoding='utf8')
     counts = Counter()
-    for day, sname, hashtags in json_iterate(json_fp, ids_seen):
+    for day, sname, hashtags in json_iterate(json_fp, ids_seen, handles):
         days_old = (today - day).days
         # print sname, hashtags
         for timespan in timespans:
@@ -114,13 +115,14 @@ def main():
     timespans = parse_timespans(args['-t'])
     files = get_files('jsons', 'json')
     ndays = int(args['-d'])
+    handles = set(twitter_handle_to_party().keys())
     for day in range(ndays):
         ids_seen = set()
         tags_list = dict([(timespan, defaultdict(lambda: Counter())) for timespan in timespans])
         thisday = today - timedelta(days=day)
         print 'pretending today is %s' % thisday.strftime('%Y-%m-%d')
         for f in files:
-            parse(f, tags_list, timespans, thisday, ids_seen)
+            parse(f, tags_list, timespans, thisday, ids_seen, handles)
         outfiles = open_outfiles(thisday, timespans)
         for outfile, span in zip(outfiles, timespans):
             write_tags(outfile, tags_list[span])

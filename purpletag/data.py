@@ -29,3 +29,22 @@ def parse_twitter_handles():
 def parse_legislators():
     yaml_doc = yaml.load(open(config.get('data', 'path') + '/' + config.get('data', 'leg_yaml'), 'r'))
     return [d for d in yaml_doc]
+
+
+def twitter_handle_to_party():
+    """ Read YAML files from GovTrack and map twitter handle to party. We
+    restrict to Republican/Democrat.
+    FIXME: This assumes bioguide ids always exist. We also assume that the party of your last term is your party.
+    """
+    twitter_handles = parse_twitter_handles()
+    bioguide2handle = dict([(t['id']['bioguide'], t['social']['twitter'].lower()) for t in twitter_handles])
+    legislators = parse_legislators()
+    handle2party = dict()
+    for leg in legislators:
+        if leg['id']['bioguide'] in bioguide2handle:
+            party = leg['terms'][0]['party']
+            if party in ['Republican', 'Democrat']:
+                handle2party[bioguide2handle[leg['id']['bioguide']]] = leg['terms'][-1]['party']
+    return handle2party
+
+
