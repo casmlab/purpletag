@@ -49,3 +49,11 @@ purpletag Package
     :undoc-members:
     :show-inheritance:
 
+:mod:`purpletag_serve` Module
+-----------------------------
+
+.. automodule:: purpletag.purpletag_serve
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
