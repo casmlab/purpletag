@@ -156,3 +156,22 @@ tcot 0.002249
 ```
 
 Output is stored in `/data/purpletag/scores`.
+
+### `serve`
+
+This command will launch a simple web server to visualize tag polarity over time, using [`dygraphs`](http://dygraphs.com/)
+
+```
+purpletag serve -h
+usage: purpletag serve [options]
+
+Launch a web service to visualize results.
+
+Options
+    -h, --help             help
+    -n <tags>              number of tags to show from each party [default: 100]
+```
+
+The web data is stored in `/data/purpletag/web`. The default port is set by the config file. So <http://0.0.0.0:8000/1.html> might look something like this:
+
+![sample](https://raw.githubusercontent.com/casmlab/purpletag/master/docs/sample-graph.png)
