@@ -146,19 +146,25 @@ Options
 
 These produce `.scores` files, one per `.tags` file. E.g.,
 `2014-05-02.365.scores` contains the scores for the hashtags used for the 365
-days prior to May 2, 2014. The scores range from -1 (liberal) to +1
-(conservative).
+days prior to May 2, 2014. The scores range from -Inf (liberal) to +Inf
+(conservative). The scores are computed by the following approach:
+
+1. Compute the [Chi-squared](http://en.wikipedia.org/wiki/Chi-squared_test) value for each hashtag (i.e., how correlated is it with a party?)
+2. Determine the signed version of this score (i.e., is it more indicative of liberals (-) or conservatives (+).
+3. Compute the [z-score](http://en.wikipedia.org/wiki/Standard_score) for all tags in this file.
+
+For example:
 
 ```
-demandavote -0.004258
-getcovered -0.003548
-raisethewage -0.003548
+raisethewage -33.2568
+1010means -21.485
+renewui -17.2857
 .
 .
 .
-senatemustact 0.001499
-fairnessforall 0.001799
-tcot 0.002249
+keystonexl 10.3592
+irs 10.9261
+obamacare 14.5419
 ```
 
 Output is stored in `/data/purpletag/scores`.
