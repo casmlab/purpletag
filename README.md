@@ -171,7 +171,7 @@ Output is stored in `/data/purpletag/scores`.
 
 ### `serve`
 
-This command will launch a simple web server to visualize tag polarity over time, using [`dygraphs`](http://dygraphs.com/)
+This command will launch a [SimpleHTTPWebServer](https://docs.python.org/2/library/simplehttpserver.html) to visualize tag polarity over time, using [`dygraphs`](http://dygraphs.com/)
 
 ```
 purpletag serve -h
