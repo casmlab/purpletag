@@ -13,13 +13,14 @@ import io
 
 import numpy as np
 from scipy.sparse import csr_matrix
+from scipy.stats.mstats import zscore
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_selection import chi2
 from sklearn.preprocessing import LabelEncoder
 import requests
 
 from . import config
-from data import get_basenames, get_files, parse_legislators, parse_twitter_handles, twitter_handle_to_party
+from data import get_basenames, get_files, twitter_handle_to_party
 
 
 def has_score_file(tag_file, score_files_bn):
@@ -91,9 +92,10 @@ def compute_signs(X, y, V):
 def score_features(X, y, V, args):
     """ FIXME: allow different options. """
     chis, pvals = chi2(X, y)
-    chis /= sum(chis)
+    # chis /= sum(chis)
     signs = compute_signs(X, y, V)
-    return np.multiply(chis, signs)
+    signs = np.multiply(chis, signs)
+    return zscore(signs)
 
 
 def write_scores(scores, vocab, tag_file):
@@ -102,7 +104,7 @@ def write_scores(scores, vocab, tag_file):
                             'path') + '/' + config.get('data', 'scores') + '/' + basename + '.scores',
                  mode='wt', encoding='utf8')
     for word, score in sorted(zip(vocab, scores), key=lambda x: x[1]):
-        fp.write('%s %f\n' % (word, score))
+        fp.write('%s %g\n' % (word, score))
     fp.close()
 
 
