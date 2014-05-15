@@ -4,6 +4,7 @@ Launch a web service to visualize results.
 
 Options
     -h, --help             help
+    -n <tags>              number of tags to show from each party [default:100]
 """
 from collections import defaultdict
 import io
@@ -100,7 +101,8 @@ def create_html(scores):
 
 def main():
     args = docopt(__doc__)
-    scores = load_scores(n=100)
+    n = int(args['-n'])
+    scores = load_scores(n)
     write_scores(scores)
     create_html(scores)
     serve()
