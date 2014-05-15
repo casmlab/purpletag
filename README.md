@@ -52,8 +52,11 @@ The most commonly used purpletag commands are:
      collect    Collect tweets from members of congress, stored in json
      parse      Parse tweet json
      score      Create score files containing polarization scores for hashtags and MOCs.
+     serve      Launch a web service to visualize results.
 See 'purpletag help <command>' for more information on a specific command.
 ```
+
+The expected use case is that `collect` is run continuously, then `parse`, `score`, `serve` are run once daily. There is also support for using historical data (see the `-s` option of `collect` and the `-d` option of `parse`).
 
 ### `collect`
 
@@ -99,7 +102,8 @@ Parse .json files into .tags files.
 
 Options
     -h, --help                 help
-    -t <timespans>             sliding window timespans [default: 1,30,365]
+    -t <timespans>             sliding window timespans [default: 1,7,30]
+    -d <days>                  number of historical days to simulate [default: 1]
 ```
 
 The output looks like this:
@@ -113,11 +117,13 @@ For example, this indicates that Lynn Westmoreland used the hashtag #jobs
 once, #nationaldayofprayer twice, and #benghazi three times.
 
 The `-t` parameter indicates a list of timespans to use when aggregating these
-statistics. For example `purpletag parse -t 365` will collect all tweets
-posted in the past 365 days and compute output like the example above. The
-file name itself will indicate this. For example, `2014-05-02.365.tags` is a
+statistics. For example `purpletag parse -t 30` will parse all tweets
+posted in the past 30 days and compute output like the example above. The
+file name itself will indicate this. For example, `2014-05-02.30.tags` is a
 tags file created when running this command on May 2, 2014, collecting
-statistics for the past 365 days.
+statistics for the past 30 days.
+
+The `-d` parameter allows you to simulate running this for a number of days in the past. This is useful after running `purpletag collect -s` to collect all historical data (up to 3,200 per legislator), then generating tags files as if you had been running this daily.
 
 Output is stored in `/data/purpletag/tags`.
 
