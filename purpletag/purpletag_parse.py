@@ -4,7 +4,7 @@ Parse .json files into .tags files.
 
 Options
     -h, --help                 help
-    -t <timespans>             sliding window timespans [default: 1,30,365]
+    -t <timespans>             sliding window timespans [default: 1,7,30]
     -d <days>                  number of historical days to simulate [default: 1]
 """
 import codecs
