@@ -4,7 +4,7 @@ Launch a web service to visualize results.
 
 Options
     -h, --help             help
-    -n <tags>              number of tags to show from each party [default:100]
+    -n <tags>              number of tags to show from each party [default: 100]
 """
 from collections import defaultdict
 import io
