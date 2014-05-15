@@ -54,6 +54,7 @@ setup(
             'purpletag-collect = purpletag.purpletag_collect:main',
             'purpletag-parse = purpletag.purpletag_parse:main',
             'purpletag-score = purpletag.purpletag_score:main',
+            'purpletag-serve = purpletag.purpletag_serve:main',
         ],
     },
     test_suite='tests',

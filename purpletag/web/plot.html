@@ -1,0 +1,33 @@
+<html>
+<head>
+<script type="text/javascript"
+  src="http://dygraphs.com/dygraph-combined.js"></script>
+<style type="text/css">
+.dygraph-legend > span { display: none; }
+.dygraph-legend > span.highlight { display: inline; }
+</style>
+</head>
+<body>
+<div id="graphdiv"></div>
+<script type="text/javascript">
+  g = new Dygraph(
+
+    // containing div
+    document.getElementById("graphdiv"),
+
+    // path to a CSV file.
+    "%s.csv",
+    {   highlightCircleSize: 2,
+        strokeWidth: 1,
+        strokeBorderWidth: null,
+
+        highlightSeriesOpts: {
+          strokeWidth: 3,
+          strokeBorderWidth: 1,
+          highlightCircleSize: 5,
+        }
+    }// options
+  );
+</script>
+</body>
+</html>

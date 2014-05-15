@@ -15,7 +15,7 @@ from subprocess import call
 
 from docopt import docopt
 
-CMDS = ['collect', 'parse', 'score']
+CMDS = ['collect', 'parse', 'score', 'serve']
 
 
 def main():

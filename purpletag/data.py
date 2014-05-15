@@ -47,4 +47,3 @@ def twitter_handle_to_party():
                 handle2party[bioguide2handle[leg['id']['bioguide']]] = leg['terms'][-1]['party']
     return handle2party
 
-
