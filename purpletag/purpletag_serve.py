@@ -40,9 +40,9 @@ def read_scores(score_file, n):
     m = min(n, len(tags))
 
     for i, idx in enumerate(indices[:m]):
-        result[tags[idx]] = unicode(m - i)
-    for i, idx in enumerate(indices[::-1][:m]):
         result[tags[idx]] = unicode(-(m - i))
+    for i, idx in enumerate(indices[::-1][:m]):
+        result[tags[idx]] = unicode(m - i)
     print result
     return result
 
