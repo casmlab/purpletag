@@ -39,10 +39,11 @@ def read_scores(score_file, n):
     result = defaultdict(lambda: 'NaN')
     m = min(n, len(tags))
 
-    for idx in indices[:m]:
-        result[tags[idx]] = unicode(m - idx)
-    for idx in indices[::-1][:m]:
-        result[tags[idx]] = unicode(-(m - idx))
+    for i, idx in enumerate(indices[:m]):
+        result[tags[idx]] = unicode(m - i)
+    for i, idx in enumerate(indices[::-1][:m]):
+        result[tags[idx]] = unicode(-(m - i))
+    print result
     return result
 
     # tags_to_keep = set(tags[np.argsort(vals)[range(m) + range(len(tags) - m, len(tags))]])
