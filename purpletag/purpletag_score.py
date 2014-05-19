@@ -94,7 +94,7 @@ def score_features(X, y, V, args):
     chis, pvals = chi2(X, y)
     # chis /= sum(chis)
     signs = compute_signs(X, y, V)
-    signs = np.multiply(chis, signs) / X.sum()  # or log(X.sum)?
+    signs = np.multiply(chis, signs)
     return signs
     # return zscore(signs)
 

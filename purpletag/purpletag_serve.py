@@ -35,12 +35,20 @@ def read_scores(score_file, n):
         d[tag] = float(score)
     tags = np.array(d.keys())
     vals = np.array([d[t] for t in tags])
-    m = min(n, len(tags))
-    tags_to_keep = set(tags[np.argsort(vals)[range(m) + range(len(tags) - m, len(tags))]])
+    indices = np.argsort(vals)
     result = defaultdict(lambda: 'NaN')
-    for tag in tags_to_keep:
-        result[tag] = unicode(d[tag])
+    m = min(n, len(tags))
+
+    for idx in indices[:m]:
+        result[tags[idx]] = unicode(m - idx)
+    for idx in indices[::-1][:m]:
+        result[tags[idx]] = unicode(-(m - idx))
     return result
+
+    # tags_to_keep = set(tags[np.argsort(vals)[range(m) + range(len(tags) - m, len(tags))]])
+    # for tag in tags_to_keep:
+    #     result[tag] = unicode(d[tag])
+    # return result
 
 
 def load_scores(n=20):
