@@ -53,8 +53,6 @@ def load_scores(n=20):
         print score_file
         day, timespan = parse_filename(score_file)
         scores = read_scores(score_file, n)
-        print day, timespan
-        print scores
         result[timespan][day] = scores
     return result
 

@@ -94,8 +94,9 @@ def score_features(X, y, V, args):
     chis, pvals = chi2(X, y)
     # chis /= sum(chis)
     signs = compute_signs(X, y, V)
-    signs = np.multiply(chis, signs)
-    return zscore(signs)
+    signs = np.multiply(chis, signs) / X.sum()  # or log(X.sum)?
+    return signs
+    # return zscore(signs)
 
 
 def write_scores(scores, vocab, tag_file):
