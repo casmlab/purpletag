@@ -31,9 +31,17 @@
           highlightCircleSize: 5,
         },
         ylabel: 'Polarity (+ means more conservative)',
-        showRangeSelector: true
+        showRangeSelector: true,
+        clickCallback: function(event, x, points) {
+          if (g.isSeriesLocked()) {
+            g.clearSelection();
+          } else {
+          g.setSelection(g.getSelection(), g.getHighlightSeries(), true);
+          }
+        }
     }// options
   );
+
 </script>
 </body>
 </html>
