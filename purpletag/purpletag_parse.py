@@ -75,7 +75,7 @@ def parse(json_f, tags_list, timespans, today, ids_seen, handles):
         days_old = (today - day).days
         # print sname, hashtags
         for timespan in timespans:
-            if days_old <= timespan:
+            if days_old <= timespan and days_old > 0:
                 counts[timespan] += 1
                 tags_list[timespan][sname].update(hashtags)
     print 'timespan counts=', counts
