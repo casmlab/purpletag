@@ -3,6 +3,14 @@
 History
 -------
 
+0.1.3 (2014-05-22)
+++++++++++++++++++
+* Bug fixes in parse
+* Install web data
+* Enable time series selection
+* Graph ranks instead of scores
+* UI tweaks
+
 0.1.1 (2014-05-15)
 ++++++++++++++++++
 
