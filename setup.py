@@ -17,6 +17,8 @@ if sys.argv[-1] == 'publish':
 readme = open('README.rst').read()
 history = open('HISTORY.rst').read().replace('.. :changelog:', '')
 
+#    include_package_data=True,
+
 setup(
     name='purpletag',
     version='0.1.1',
@@ -31,7 +33,7 @@ setup(
     ],
     package_dir={'purpletag':
                  'purpletag'},
-    include_package_data=True,
+    package_data={'purpletag': ['web/plot.html']},
     install_requires=[
     ],
     license="BSD",
