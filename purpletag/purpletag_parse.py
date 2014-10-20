@@ -13,7 +13,6 @@ from datetime import datetime, timedelta
 import io
 import json
 import sys
-import traceback
 
 from numpy import array as npa
 from docopt import docopt

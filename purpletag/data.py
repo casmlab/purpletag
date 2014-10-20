@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import glob
+import io
+import os
 from os.path import basename
+import requests
 import yaml
 
 from . import config
@@ -21,13 +24,37 @@ def get_files(subdir, extension):
                      config.get('data', subdir) + '/*.' + extension)
 
 
+def fetch_twitter_handles():
+    """ Fetch twitter handles from govtrack. """
+    print 'fetching legislator Twitter handles from GovTrack...'
+    text = requests.get(config.get('govtrack', 'handles')).text
+    fp = open(config.get('data', 'path') + '/' + config.get('data', 'twitter_yaml'), 'w')
+    fp.write(text)
+    fp.close()
+
+
+def fetch_legislators():
+    """ Download yaml of legislator info from GovTrack. """
+    print 'fetching legislators from GovTrack...'
+    text = requests.get(config.get('govtrack', 'legislators')).text
+    fp = io.open(config.get('data', 'path') + '/' + config.get('data', 'leg_yaml'), mode='wt', encoding='utf8')
+    fp.write(text)
+    fp.close()
+
+
 def parse_twitter_handles():
-    yaml_doc = yaml.load(open(config.get('data', 'path') + '/' + config.get('data', 'twitter_yaml'), 'r'))
+    yaml_doc_path = config.get('data', 'path') + '/' + config.get('data', 'twitter_yaml')
+    if not os.path.isfile(yaml_doc_path):
+        fetch_twitter_handles()
+    yaml_doc = yaml.load(open(yaml_doc_path, 'r'))
     return [d for d in yaml_doc if 'twitter' in d['social']]
 
 
 def parse_legislators():
-    yaml_doc = yaml.load(open(config.get('data', 'path') + '/' + config.get('data', 'leg_yaml'), 'r'))
+    yaml_doc_path = config.get('data', 'path') + '/' + config.get('data', 'leg_yaml')
+    if not os.path.isfile(yaml_doc_path):
+        fetch_legislators()
+    yaml_doc = yaml.load(open(yaml_doc_path, 'r'))
     return [d for d in yaml_doc]
 
 
@@ -46,4 +73,3 @@ def twitter_handle_to_party():
             if party in ['Republican', 'Democrat']:
                 handle2party[bioguide2handle[leg['id']['bioguide']]] = leg['terms'][-1]['party']
     return handle2party
-

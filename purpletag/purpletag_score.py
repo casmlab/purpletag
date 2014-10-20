@@ -17,10 +17,9 @@ from scipy.stats.mstats import zscore
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_selection import chi2
 from sklearn.preprocessing import LabelEncoder
-import requests
 
 from . import config
-from data import get_basenames, get_files, twitter_handle_to_party
+from data import get_basenames, get_files, fetch_legislators, twitter_handle_to_party
 
 
 def has_score_file(tag_file, score_files_bn):
@@ -135,14 +134,6 @@ def get_tag_files(overwrite):
     else:
         score_files_bn = get_basenames(get_files('scores', 'scores'))
         return [f for f in tag_files if not has_score_file(f, score_files_bn)]
-
-
-def fetch_legislators():
-    """ Download yaml of legislator info from GovTrack. """
-    text = requests.get(config.get('govtrack', 'legislators')).text
-    fp = io.open(config.get('data', 'path') + '/' + config.get('data', 'leg_yaml'), mode='wt', encoding='utf8')
-    fp.write(text)
-    fp.close()
 
 
 def main():
