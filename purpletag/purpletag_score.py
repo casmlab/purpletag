@@ -7,6 +7,7 @@ Options
     -r, --refresh-mocs     fetch latest legislator information from GovTrack
     -c, --counts           use hashtag count features instead of binary features
     -o, --overwrite        overwrite existing .scores files
+    -s, --score-mocs       calculate MOC scores from tag scores
 """
 from docopt import docopt
 import io
@@ -58,7 +59,7 @@ def parse_tag_file(tag_file, handle2party, args):
             dicts.append(parse_tags(parts[1:], args))
             handles.append(handle)
     return (handles, dicts, labels)
-
+    
 
 def feat_counts(fi, ci, X, y):
     """
@@ -108,6 +109,15 @@ def write_scores(scores, vocab, tag_file):
     fp.close()
 
 
+def write_moc_scores(mocs, tag_file):
+    basename = get_basenames([tag_file])[0]
+    fp = io.open(config.get('data', 'path') + '/' + config.get('data', 'scores') + '/' + basename + '.moc.scores',
+                 mode='wt', encoding='utf8')
+    for moc, score in mocs.items():
+        fp.write('%s %g\n' % (moc, score))
+    fp.close()
+    
+        
 def score(tag_file, handle2party, args):
     """ Output a file with hashtag scores. """
     handles, tags, parties = parse_tag_file(tag_file, handle2party, args)
@@ -126,28 +136,73 @@ def score(tag_file, handle2party, args):
     write_scores(scores, vec.get_feature_names(), tag_file)
 
 
-def get_tag_files(overwrite):
+def get_tag_scores(score_file, args):
+    scores = {}
+    with open(score_file) as f:
+        for line in f:
+            (key, val) = line.split()
+            scores[key] = val
+    return scores
+    
+
+def score_mocs(score_file, tag_file, args):
+    """ Output a file with user scores. """
+    inf = io.open(tag_file, mode='rt', encoding='utf8')
+    scores = get_tag_scores(score_file, args)
+    
+    mocs = {}
+    # get the MOC's tags
+    for line in inf:
+        moc_score = 0
+        tags = {}
+        parts = line.strip().split()
+        handle = parts[0]
+        tags = parse_tags(parts[1:], args)
+        
+        # calculate a MOC score
+        for tag in tags:
+            if not args['--counts']:
+                try:
+                    moc_score += float(scores[tag])
+                except:
+                    print "can't find key for", tag # FIXME: can't handle accented characters in keys
+                    continue
+            else:
+                print "using counts. feature not supported."
+        mocs[handle] = moc_score
+        
+    # write the score to a file
+    write_moc_scores(mocs, tag_file)
+    return True
+
+
+def get_tag_files(overwrite, score_mocs):
     """ Get .tags files. """
     tag_files = get_files('tags', 'tags')
-    if overwrite:
+    if overwrite or score_mocs:
         return tag_files
     else:
         score_files_bn = get_basenames(get_files('scores', 'scores'))
         return [f for f in tag_files if not has_score_file(f, score_files_bn)]
-
-
+    
+    
 def main():
     args = docopt(__doc__)
     if args['--refresh-mocs']:
         print 'refreshing MOCs'
         fetch_legislators()
-    print 'reading twitter handles'
-    handle2party = twitter_handle_to_party()
-    print handle2party.items()[0]
-    tag_files = get_tag_files(args['--overwrite'])
+    
+    # print 'reading twitter handles'
+    # handle2party = twitter_handle_to_party()
+    # print handle2party.items()[0]
+    tag_files = get_tag_files(args['--overwrite'], args['--score-mocs'])
     for tag_file in tag_files:
-        print 'scoring', tag_file
-        score(tag_file, handle2party, args)
+        # print 'scoring', tag_file
+        # score(tag_file, handle2party, args)
+        if args['--score-mocs']:
+            score_file = tag_file.replace('tags', 'scores')
+            print 'scoring MOCs with', score_file
+            score_mocs(score_file, tag_file, args)
 
 
 if __name__ == '__main__':
