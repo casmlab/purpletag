@@ -138,7 +138,7 @@ def score(tag_file, handle2party, args):
 
 def get_tag_scores(score_file, args):
     scores = {}
-    with open(score_file) as f:
+    with io.open(score_file, encoding='utf8') as f:
         for line in f:
             (key, val) = line.split()
             scores[key] = val
