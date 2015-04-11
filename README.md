@@ -142,12 +142,15 @@ Options
     -r, --refresh-mocs     fetch latest legislator information from GovTrack
     -c, --counts           use hashtag count features instead of binary features
     -o, --overwrite        overwrite existing .scores files
+    -s, --score-mocs	   calculate MOC scores from tag scores
 ```
 
-These produce `.scores` files, one per `.tags` file. E.g.,
+These produce `.scores` files and `.moc.scores`, one per `.tags` file. E.g.,
 `2014-05-02.365.scores` contains the scores for the hashtags used for the 365
-days prior to May 2, 2014. The scores range from -Inf (liberal) to +Inf
-(conservative). The scores are computed by the following approach:
+days prior to May 2, 2014. `2014-05-02.365.moc.scores` contains the scores for MOCs who used the hashtags scored in `2014-05-02.365.scores`. The scores range from -Inf (liberal) to +Inf
+(conservative). 
+
+The tags' scores are computed by the following approach:
 
 1. Compute the [Chi-squared](http://en.wikipedia.org/wiki/Chi-squared_test) value for each hashtag (i.e., how correlated is it with a party?)
 2. Determine the signed version of this score (i.e., is it more indicative of liberals (-) or conservatives (+).
@@ -165,6 +168,25 @@ renewui -17.2857
 keystonexl 10.3592
 irs 10.9261
 obamacare 14.5419
+```
+The MOC scores are computed by the following approach:
+
+1. Get a list of the tags the MOC used
+2. Sum their scores (if the `--counts` option is used, those scores are first multiplied by the number of times the tag was used)
+
+For example:
+
+```
+nitalowey -2326.2
+senatorbaldwin -1879.52
+janschakowsky -1877.39
+.
+.
+.
+stevedaines 879.76
+senshelby 945.492
+speakerboehner 5681.58
+
 ```
 
 Output is stored in `/data/purpletag/scores`.

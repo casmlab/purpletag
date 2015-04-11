@@ -12,6 +12,7 @@ Options
 from docopt import docopt
 import io
 
+import operator
 import numpy as np
 from scipy.sparse import csr_matrix
 from scipy.stats.mstats import zscore
@@ -113,7 +114,8 @@ def write_moc_scores(mocs, tag_file):
     basename = get_basenames([tag_file])[0]
     fp = io.open(config.get('data', 'path') + '/' + config.get('data', 'scores') + '/' + basename + '.moc.scores',
                  mode='wt', encoding='utf8')
-    for moc, score in mocs.items():
+    sorted_mocs = sorted(mocs.items(), key=operator.itemgetter(1))
+    for moc, score in sorted_mocs:
         fp.write('%s %g\n' % (moc, score))
     fp.close()
     
@@ -158,17 +160,17 @@ def score_mocs(score_file, tag_file, args):
         parts = line.strip().split()
         handle = parts[0]
         tags = parse_tags(parts[1:], args)
-        
+
         # calculate a MOC score
-        for tag in tags:
+        for tag, count in tags.iteritems():
             if not args['--counts']:
                 try:
                     moc_score += float(scores[tag])
-                except:
-                    print "can't find key for", tag # FIXME: can't handle accented characters in keys
+                except KeyError:
+                    print "Can't find key for", tag
                     continue
             else:
-                print "using counts. feature not supported."
+                moc_score += float(scores[tag]) * count
         mocs[handle] = moc_score
         
     # write the score to a file
@@ -192,13 +194,13 @@ def main():
         print 'refreshing MOCs'
         fetch_legislators()
     
-    # print 'reading twitter handles'
-    # handle2party = twitter_handle_to_party()
-    # print handle2party.items()[0]
+    print 'reading twitter handles'
+    handle2party = twitter_handle_to_party()
+    print handle2party.items()[0]
     tag_files = get_tag_files(args['--overwrite'], args['--score-mocs'])
     for tag_file in tag_files:
-        # print 'scoring', tag_file
-        # score(tag_file, handle2party, args)
+        print 'scoring', tag_file
+        score(tag_file, handle2party, args)
         if args['--score-mocs']:
             score_file = tag_file.replace('tags', 'scores')
             print 'scoring MOCs with', score_file
