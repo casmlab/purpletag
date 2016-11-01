@@ -13,7 +13,9 @@ config = ConfigParser.RawConfigParser()
 if 'PURPLE_CFG' in os.environ:
     config.read(os.environ['PURPLE_CFG'])
 else:
-    config.read('~/.purpletag')
+    from os.path import expanduser
+    home = expanduser("~")
+    config.read(home + os.path.sep + '.purpletag')
 
 
 sys.stdout = codecs.getwriter('utf8')(sys.stdout)
