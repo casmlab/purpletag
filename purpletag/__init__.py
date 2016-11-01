@@ -7,7 +7,7 @@ import sys
 
 __author__ = 'Aron Culotta'
 __email__ = 'aronwc@gmail.com'
-__version__ = '0.1.3'
+__version__ = '0.1.4'
 
 config = ConfigParser.RawConfigParser()
 if 'PURPLE_CFG' in os.environ:
