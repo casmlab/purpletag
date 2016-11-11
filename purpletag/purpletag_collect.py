@@ -34,23 +34,31 @@ def track_users(ids):
     print 'tracking', len(ids), 'users'
     outf = io.open(make_output_file(), mode='wt', encoding='utf8')
     count = 0
-    for tweet in twutil.collect.track_user_ids(ids):
-        try:
-            outf.write(json.dumps(tweet, ensure_ascii=False, encoding='utf8'))
-            outf.write(u'\n')
-            outf.flush()
-            count += 1
-            if count > 100000:
+    try:
+        for tweet in twutil.collect.track_user_ids(ids):
+            try:
+                outf.write(json.dumps(tweet, ensure_ascii=False, encoding='utf8'))
+                outf.write(u'\n')
+                outf.flush()
+                count += 1
+                if count > 100000:
+                    outf.close()
+                    outf = io.open(make_output_file(), mode='wt', encoding='utf8')
+                    count = 0
+            except:
+                e = sys.exc_info()
+                print 'skipping error', e[0]
+                print traceback.format_exc()
+                twutil.collect.reinit()
                 outf.close()
-                outf = io.open(make_output_file(), mode='wt', encoding='utf8')
-                count = 0
-        except:
-            e = sys.exc_info()
-            print 'skipping error', e[0]
-            print traceback.format_exc()
-            twutil.collect.reinit()
-            outf.close()
-            track_users(ids)
+                track_users(ids)
+    except:
+        e = sys.exc_info()
+        print 'skipping error', e[0]
+        print traceback.format_exc()
+        twutil.collect.reinit()
+        outf.close()
+        track_users(ids)
 
     outf.close()
 
