@@ -44,7 +44,7 @@ def read_scores(legislators, scores):
 def main():
 	config = configparser.ConfigParser()
 	config.read('settings.cfg')
-	core_path = config.get('data', 'path') + '/' + config.get('data', 'scores') + '/'
+	score_path = config.get('data', 'path') + '/' + config.get('data', 'scores') + '/'
 	score_files = os.listdir(score_path)
 	moc_scores = parse_moc_scores(config, score_files)
 	mocs_with_twitter = parse_twitter_handles(config)
