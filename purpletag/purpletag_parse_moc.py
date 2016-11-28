@@ -22,7 +22,7 @@ def parse_moc_scores(config, score_files):
             components = f.split('.')
             date = components[0]
             if components[2] == 'moc':
-                with open(filepath) as score_file:
+                with open(score_path) as score_file:
                     scores = score_file.readlines()
                 moc_scores[date] = scores
     return moc_scores
