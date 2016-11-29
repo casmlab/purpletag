@@ -45,11 +45,11 @@ def main():
 	config.read('settings.cfg')
 	score_path = config.get('data', 'path') + '/' + config.get('data', 'scores') + '/'
 	score_files = os.listdir(score_path)
-	moc_scores = parse_moc_scores(config, score_files)
+	moc_scores = parse_hashtag_scores(config, score_files)
 	mocs_with_twitter = parse_twitter_handles(config)
 	moc_scores_by_date = read_scores(mocs_with_twitter, moc_scores)
 	df = pd.DataFrame(dict([(k, pd.Series(v)) for k,v in moc_scores_by_date.items()])).transpose().dropna(how='all')
-	data_file = config.get('data', 'path') + '/' + config.get('data', 'moc_scores')
+	data_file = config.get('data', 'path') + '/' + config.get('data', 'hashtag_scores')
 	df.to_csv(data_file, sep='\t')
 
 
