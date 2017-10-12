@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from future import standard_library
+standard_library.install_aliases()
 import codecs
-import ConfigParser
+import configparser
 import os
 import sys
 
@@ -9,7 +11,7 @@ __author__ = 'Aron Culotta'
 __email__ = 'aronwc@gmail.com'
 __version__ = '0.1.4'
 
-config = ConfigParser.RawConfigParser()
+config = configparser.RawConfigParser()
 if 'PURPLE_CFG' in os.environ:
     config.read(os.environ['PURPLE_CFG'])
 else:

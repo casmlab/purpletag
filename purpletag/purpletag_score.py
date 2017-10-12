@@ -9,6 +9,12 @@ Options
     -o, --overwrite        overwrite existing .scores files
     -s, --score-mocs       calculate MOC scores from tag scores
 """
+from __future__ import print_function
+from __future__ import absolute_import
+from __future__ import division
+from builtins import zip
+from builtins import range
+from past.utils import old_div
 from docopt import docopt
 import io
 
@@ -21,7 +27,7 @@ from sklearn.feature_selection import chi2
 from sklearn.preprocessing import LabelEncoder
 
 from . import config
-from data import get_basenames, get_files, fetch_legislators, twitter_handle_to_party
+from .data import get_basenames, get_files, fetch_legislators, twitter_handle_to_party
 
 
 def has_score_file(tag_file, score_files_bn):
@@ -76,8 +82,7 @@ def feat_counts(fi, ci, X, y):
 
 
 def feat_class_pr(X, y, ci, V):
-   return (1. + np.array([feat_counts(i, ci, X, y) for i in range(V)])) \
-       / (V + len([yi for yi in y if yi == ci]))
+   return old_div((1. + np.array([feat_counts(i, ci, X, y) for i in range(V)])), (V + len([yi for yi in y if yi == ci])))
 
 
 def compute_signs(X, y, V):
@@ -114,7 +119,7 @@ def write_moc_scores(mocs, tag_file):
     basename = get_basenames([tag_file])[0]
     fp = io.open(config.get('data', 'path') + '/' + config.get('data', 'scores') + '/' + basename + '.moc.scores',
                  mode='wt', encoding='utf8')
-    sorted_mocs = sorted(mocs.items(), key=operator.itemgetter(1))
+    sorted_mocs = sorted(list(mocs.items()), key=operator.itemgetter(1))
     for moc, score in sorted_mocs:
         fp.write('%s %g\n' % (moc, score))
     fp.close()
@@ -124,16 +129,16 @@ def score(tag_file, handle2party, args):
     """ Output a file with hashtag scores. """
     handles, tags, parties = parse_tag_file(tag_file, handle2party, args)
     if len(tags) == 0:
-        print "can't find any legislators in %s" % tag_file
+        print("can't find any legislators in %s" % tag_file)
         return
 
     vec = DictVectorizer()
     X = vec.fit_transform(tags)
-    print '5 features:', vec.get_feature_names()[:5]
+    print('5 features:', vec.get_feature_names()[:5])
     label_enc = LabelEncoder()
     y = label_enc.fit_transform(parties)
-    print 'vectorized %d instances' % len(y)
-    print 'classes=', label_enc.classes_
+    print('vectorized %d instances' % len(y))
+    print('classes=', label_enc.classes_)
     scores = score_features(X, y, len(vec.vocabulary_), args)
     write_scores(scores, vec.get_feature_names(), tag_file)
 
@@ -162,12 +167,12 @@ def score_mocs(score_file, tag_file, args):
         tags = parse_tags(parts[1:], args)
 
         # calculate a MOC score
-        for tag, count in tags.iteritems():
+        for tag, count in tags.items():
             if not args['--counts']:
                 try:
                     moc_score += float(scores[tag])
                 except KeyError:
-                    print "Can't find key for", tag
+                    print("Can't find key for", tag)
                     continue
             else:
                 moc_score += float(scores[tag]) * count
@@ -191,19 +196,19 @@ def get_tag_files(overwrite, score_mocs):
 def main():
     args = docopt(__doc__)
     if args['--refresh-mocs']:
-        print 'refreshing MOCs'
+        print('refreshing MOCs')
         fetch_legislators()
     
-    print 'reading twitter handles'
+    print('reading twitter handles')
     handle2party = twitter_handle_to_party()
-    print handle2party.items()[0]
+    print(list(handle2party.items())[0])
     tag_files = get_tag_files(args['--overwrite'], args['--score-mocs'])
     for tag_file in tag_files:
-        print 'scoring', tag_file
+        print('scoring', tag_file)
         score(tag_file, handle2party, args)
         if args['--score-mocs']:
             score_file = tag_file.replace('tags', 'scores')
-            print 'scoring MOCs with', score_file
+            print('scoring MOCs with', score_file)
             score_mocs(score_file, tag_file, args)
 
 

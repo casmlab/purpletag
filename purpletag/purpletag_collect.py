@@ -9,6 +9,9 @@ Options
     -t, --track                collect tweets in real time using streaming API
     -s, --search               search historical tweets using search API
 """
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import str
 from docopt import docopt
 import io
 import json
@@ -20,7 +23,7 @@ import traceback
 import twutil
 
 from . import config
-from data import fetch_twitter_handles, parse_twitter_handles
+from .data import fetch_twitter_handles, parse_twitter_handles
 
 
 def make_output_file():
@@ -31,7 +34,7 @@ def track_users(ids):
     """
     Track users by id, writing to jsons folder.
     """
-    print 'tracking', len(ids), 'users'
+    print('tracking', len(ids), 'users')
     outf = io.open(make_output_file(), mode='wt', encoding='utf8')
     count = 0
     for tweet in twutil.collect.track_user_ids(ids):
@@ -46,8 +49,8 @@ def track_users(ids):
                 count = 0
         except:
             e = sys.exc_info()
-            print 'skipping error', e[0]
-            print traceback.format_exc()
+            print('skipping error', e[0])
+            print(traceback.format_exc())
             twutil.collect.reinit()
             outf.close()
             track_users(ids)
@@ -59,10 +62,10 @@ def search_users(screen_names):
     """ Use the Twitter REST API to fetch the most recent 3,200 tweets from
     each user in the list of ids. When rate limits are encountered, sleep for
     5 minutes and try again."""
-    print 'searching for', len(screen_names), 'users'
+    print('searching for', len(screen_names), 'users')
     outf = io.open(make_output_file(), mode='w', encoding='utf8')
     for screen_name in screen_names:
-        print 'searching for', screen_name
+        print('searching for', screen_name)
         for tweet in twutil.collect.tweets_for_user(screen_name):
             outf.write(json.dumps(tweet, ensure_ascii=False, encoding='utf8') + '\n')
     outf.close()
@@ -71,11 +74,11 @@ def search_users(screen_names):
 def main():
     args = docopt(__doc__)
     if args['--refresh-handles']:
-        print 'refreshing handles'
+        print('refreshing handles')
         fetch_twitter_handles()
     handle_yaml = parse_twitter_handles()
     handles = [d['social']['twitter'] for d in handle_yaml]
-    print 'read', len(handles), 'handles'
+    print('read', len(handles), 'handles')
     if args['--track']:
         ids = twutil.collect.lookup_ids(handles)
         track_users(ids)

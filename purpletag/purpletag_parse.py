@@ -7,6 +7,11 @@ Options
     -t <timespans>             sliding window timespans [default: 1,7,30]
     -d <days>                  number of historical days to simulate [default: 1]
 """
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import zip
+from builtins import str
+from builtins import range
 import codecs
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta
@@ -17,7 +22,7 @@ import sys
 from numpy import array as npa
 from docopt import docopt
 
-from data import get_files, twitter_handle_to_party
+from .data import get_files, twitter_handle_to_party
 from . import config
 
 sys.stdout = codecs.getwriter('utf8')(sys.stdout)
@@ -67,7 +72,7 @@ def json_iterate(json_fp, ids_seen, handles):
 
 def parse(json_f, tags_list, timespans, today, ids_seen, handles):
     """ Populate the tags_list Counters for each timespan. """
-    print 'parsing', json_f
+    print('parsing', json_f)
     json_fp = io.open(json_f, mode='rt', encoding='utf8')
     counts = Counter()
     for day, sname, hashtags in json_iterate(json_fp, ids_seen, handles):
@@ -77,7 +82,7 @@ def parse(json_f, tags_list, timespans, today, ids_seen, handles):
             if days_old <= timespan and days_old > 0:
                 counts[timespan] += 1
                 tags_list[timespan][sname].update(hashtags)
-    print 'timespan counts=', counts
+    print('timespan counts=', counts)
     # return tags_list
 
 
@@ -87,7 +92,7 @@ def write_tags(outfile, tags):
     """
     for sn in sorted(tags):
         outfile.write(sn + ' ')
-        outfile.write(' '.join('%s:%d' % (x[0], x[1]) for x in sorted(tags[sn].iteritems(), key=lambda x: x[1])))
+        outfile.write(' '.join('%s:%d' % (x[0], x[1]) for x in sorted(iter(tags[sn].items()), key=lambda x: x[1])))
         outfile.write(u'\n')
     outfile.close()
 
@@ -119,7 +124,7 @@ def main():
         ids_seen = set()
         tags_list = dict([(timespan, defaultdict(lambda: Counter())) for timespan in timespans])
         thisday = today - timedelta(days=day)
-        print 'pretending today is %s' % thisday.strftime('%Y-%m-%d')
+        print('pretending today is %s' % thisday.strftime('%Y-%m-%d'))
         for f in files:
             parse(f, tags_list, timespans, thisday, ids_seen, handles)
         outfiles = open_outfiles(thisday, timespans)

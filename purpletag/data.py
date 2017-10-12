@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import glob
 import io
 import os
@@ -26,7 +27,7 @@ def get_files(subdir, extension):
 
 def fetch_twitter_handles():
     """ Fetch twitter handles from govtrack. """
-    print 'fetching legislator Twitter handles from GovTrack...'
+    print('fetching legislator Twitter handles from GovTrack...')
     text = requests.get(config.get('govtrack', 'handles')).text
     fp = open(config.get('data', 'path') + '/' + config.get('data', 'twitter_yaml'), 'w')
     fp.write(text)
@@ -35,7 +36,7 @@ def fetch_twitter_handles():
 
 def fetch_legislators():
     """ Download yaml of legislator info from GovTrack. """
-    print 'fetching legislators from GovTrack...'
+    print('fetching legislators from GovTrack...')
     text = requests.get(config.get('govtrack', 'legislators')).text
     fp = io.open(config.get('data', 'path') + '/' + config.get('data', 'leg_yaml'), mode='wt', encoding='utf8')
     fp.write(text)

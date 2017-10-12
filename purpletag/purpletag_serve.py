@@ -6,18 +6,23 @@ Options
     -h, --help             help
     -n <tags>              number of tags to show from each party [default: 100]
 """
+from __future__ import print_function
+from __future__ import absolute_import
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 from collections import defaultdict
 import io
 import os
 from pkg_resources import resource_string
-import SimpleHTTPServer
-import SocketServer
+import http.server
+import socketserver
 
 from docopt import docopt
 import numpy as np
 
 from . import config
-from data import get_basenames, get_files
+from .data import get_basenames, get_files
 
 
 def parse_filename(score_file):
@@ -33,17 +38,17 @@ def read_scores(score_file, n):
     for line in inf:
         tag, score = line.strip().split()
         d[tag] = float(score)
-    tags = np.array(d.keys())
+    tags = np.array(list(d.keys()))
     vals = np.array([d[t] for t in tags])
     indices = np.argsort(vals)
     result = defaultdict(lambda: 'NaN')
     m = min(n, len(tags))
 
     for i, idx in enumerate(indices[:m]):
-        result[tags[idx]] = unicode(-(m - i))
+        result[tags[idx]] = str(-(m - i))
     for i, idx in enumerate(indices[::-1][:m]):
-        result[tags[idx]] = unicode(m - i)
-    print result
+        result[tags[idx]] = str(m - i)
+    print(result)
     return result
 
     # tags_to_keep = set(tags[np.argsort(vals)[range(m) + range(len(tags) - m, len(tags))]])
@@ -59,7 +64,7 @@ def load_scores(n=20):
     # ranks: spans -> day -> tag -> score. E.g., 30 -> 2014-05-09 -> obamacare -> 10.5
     result = defaultdict(lambda: {})
     for score_file in get_files('scores', 'scores'):
-        print score_file
+        print(score_file)
         day, timespan = parse_filename(score_file)
         scores = read_scores(score_file, n)
         result[timespan][day] = scores
@@ -85,14 +90,14 @@ def write_scores(scores):
 def serve():
     os.chdir(config.get('data', 'path') + '/' + config.get('data', 'web'))
     port = int(config.get('web', 'port'))
-    Handler = SimpleHTTPServer.SimpleHTTPRequestHandler
-    httpd = SocketServer.TCPServer(("", port), Handler)
-    print "serving at port", port
+    Handler = http.server.SimpleHTTPRequestHandler
+    httpd = socketserver.TCPServer(("", port), Handler)
+    print("serving at port", port)
     httpd.serve_forever()
 
 
 def create_html(scores):
-    template_file = unicode(resource_string(__name__, 'web/plot.html'))
+    template_file = str(resource_string(__name__, 'web/plot.html'))
     index = io.open(config.get('data', 'path') + '/' + config.get('data', 'web') +
                     '/index.html', mode='wt', encoding='utf8')
     index.write(u'<html>\n')
